@@ -118,10 +118,116 @@ const SpinningWheel = () => {
 
   const t = translations[language];
 
+  const defaultSections = [
+    { _id: '1', title: 'Sección 1' },
+    { _id: '2', title: 'Sección 2' },
+    { _id: '3', title: 'Sección 3' },
+    { _id: '4', title: 'Sección 4' }
+  ];
+
   if (notes.length === 0) {
-    return <div className="min-h-screen bg-white flex items-center justify-center">
-      <p className="text-black">{t.loading}</p>
-    </div>;
+    return (
+      <div className="min-h-screen bg-white flex">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" className="fixed top-4 left-4 bg-white hover:bg-gray-100">
+              <Menu className="h-6 w-6 text-black" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 bg-white">
+            <nav className="space-y-4 mt-8">
+              <Button variant="ghost" className="w-full justify-start bg-white hover:bg-gray-100 text-black">
+                {t.home}
+              </Button>
+              <Button variant="ghost" className="w-full justify-start bg-white hover:bg-gray-100 text-black">
+                {t.history}
+              </Button>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start bg-white hover:bg-gray-100 text-black"
+                  onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                >
+                  <Languages className="h-6 w-6 mr-2" />
+                  {language === 'es' ? t.spanish : t.english}
+                </Button>
+                {showLanguageMenu && (
+                  <div className="absolute top-full left-0 w-full bg-white border rounded-md shadow-lg mt-1 z-50 overflow-hidden">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start bg-white hover:bg-gray-100 text-black"
+                      onClick={() => {
+                        setLanguage('en');
+                        setShowLanguageMenu(false);
+                      }}
+                    >
+                      {t.english}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start bg-white hover:bg-gray-100 text-black"
+                      onClick={() => {
+                        setLanguage('es');
+                        setShowLanguageMenu(false);
+                      }}
+                    >
+                      {t.spanish}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </nav>
+          </SheetContent>
+        </Sheet>
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <h1 className="text-3xl font-bold text-black mb-8">{t.title}</h1>
+          <div className="relative w-96 h-96 mb-8">
+            <div 
+              className="absolute w-6 h-8 z-10"
+              style={{
+                left: `${(detectionX / 100) * 100}%`,
+                top: `${(detectionY / 100) * 100}%`,
+                transform: 'translate(-50%, -100%) rotate(180deg)'
+              }}
+            >
+              <svg viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0L24 32L12 24L0 32L12 0Z" fill="black"/>
+              </svg>
+            </div>
+            
+            <svg
+              className="w-full h-full cursor-not-allowed opacity-50"
+              viewBox="0 0 100 100"
+            >
+              {defaultSections.map((section, index) => {
+                const angle = (360 / defaultSections.length) * index;
+                const angleRad = (angle * Math.PI) / 180;
+                const nextAngleRad = ((angle + 360 / defaultSections.length) * Math.PI) / 180;
+                
+                const radius = 45;
+                
+                const x1 = CENTER_X + radius * Math.cos(angleRad);
+                const y1 = CENTER_Y + radius * Math.sin(angleRad);
+                const x2 = CENTER_X + radius * Math.cos(nextAngleRad);
+                const y2 = CENTER_Y + radius * Math.sin(nextAngleRad);
+                
+                return (
+                  <g key={section._id}>
+                    <path
+                      d={`M ${CENTER_X} ${CENTER_Y} L ${x1} ${y1} L ${x2} ${y2} Z`}
+                      fill={colors[index % colors.length]}
+                      stroke="white"
+                      strokeWidth="0.5"
+                    />
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+          <p className="text-black">{t.loading}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
